@@ -1,0 +1,171 @@
+<template>
+  <div class="app-container">
+    <el-form ref="form" :model="form" label-width="120px" inline style="width: 100%">
+      <!-- <img src="@/assets/查看病历.jpg" alt=""> -->
+      <el-form-item label="昵称">
+        <el-input v-model="form.nickname" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="姓名">
+        <el-input v-model="form.userName" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="性别">
+        <el-radio-group v-model="form.userSexName" style="width: 300px">
+          <el-radio label="男"></el-radio>
+          <el-radio label="女"></el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="年龄(岁)">
+        <el-input v-model="form.userAge" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="联系方式">
+        <el-input v-model="form.userPhone" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="身份证号">
+        <el-input v-model="form.userId" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="就诊医疗机构">
+        <el-input v-model="form.visitMedOrg" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="就诊科室">
+        <el-input v-model="form.visitDept" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="肾病分期">
+        <el-input v-model="form.illStage" style="width: 300px"/>
+      </el-form-item>
+      <el-form-item label="头像" style="width: 420px; height: 100px">
+        <el-avatar :src="form.userPhoto" style="width: 100px; height: 100px"></el-avatar>
+      </el-form-item>
+    </el-form>
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="体征记录" name="symbolRecord">
+        <el-table
+          :data="list"
+          element-loading-text="Loading"
+          border
+          fit
+          highlight-current-row
+        >
+          <el-table-column align="center" label="序号" >
+            <template slot-scope="scope">
+              {{ scope.$index + 1}}
+            </template>
+          </el-table-column>
+          <el-table-column label="记录时间" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.recordTime }}
+            </template>
+          </el-table-column>
+          <el-table-column label="收缩压" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.sBloodPressure }}
+            </template>
+          </el-table-column>
+          <el-table-column label="舒张压" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.dBloodPressure }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="血糖" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.bloodSugar }}
+            </template>
+          </el-table-column>
+          <el-table-column label="尿量" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.urine }}
+            </template>
+          </el-table-column>
+          <el-table-column label="蛋白尿" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.proteinuria }}
+            </template>
+          </el-table-column>
+          <el-table-column label="体重" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.weight }}
+            </template>
+          </el-table-column>
+          <el-table-column label="饮食情况" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.diet }}
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="病历记录" name="pictureRecord">
+        
+        <el-table
+          :data="list"
+          element-loading-text="Loading"
+          border
+          fit
+          highlight-current-row
+        >
+          <el-table-column align="center" label="序号" >
+            <template slot-scope="scope">
+              {{ scope.$index + 1}}
+            </template>
+          </el-table-column>
+          <el-table-column label="记录时间" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.recordTime }}
+            </template>
+          </el-table-column>
+          <el-table-column label="查看病历" align="center">
+            <template slot-scope="scope">
+              <el-image 
+                style="width: 50px; height: 40px"
+                :src="url" 
+                :preview-src-list="srcList">
+              </el-image>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+    </el-tabs>
+    <div style="width: 100%; display: flex; justify-content: center; margin-top: 30px">
+      <el-button type="primary" @click="toBindPatient" >返回</el-button>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      list: ['1','2'],
+      form: {
+      },
+      activeName: 'symbolRecord',
+      url: 'http://img2.3png.com/59cf199270d052b007ae6980299f3db4ab5a.png',
+      srcList: [
+        'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+        'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+      ]
+    }
+  },
+  methods: {
+    toBindPatient() {
+      this.$router.push({
+        path: "/bindPatientList"
+      })
+    },
+    onCancel() {
+      this.$message({
+        message: 'cancel!',
+        type: 'warning'
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+.app-container{
+  margin-top: 20px;
+}
+.line{
+  text-align: center;
+}
+</style>
+
