@@ -5,7 +5,7 @@
         <el-input v-model="searchStr" style="width: 300px" clearable/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" @click="search">查询</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -68,7 +68,7 @@
       <el-table-column label="操作" align="center" width="120">
         <template slot-scope="scope">
           <div style="display: flex;">
-            <el-button type="primary" @click="toPatientInfo">查看详情</el-button>
+            <el-button type="primary" @click="toPatientInfo(scope.row.userId)">查看详情</el-button>
           </div>
         </template>
       </el-table-column>
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import { getMyBindingPatientList, getUserListByFilter } from '@/api/table'
 
 export default {
   filters: {
@@ -93,24 +93,40 @@ export default {
   data() {
     return {
       searchStr: '',
-      list: ['1'],
+      list: [],
       listLoading: true
     }
   },
   created() {
-    //this.fetchData()
+    this.fetchData()
   },
   methods: {
-    toPatientInfo(){
+    //点击详情
+    toPatientInfo(userId){
+      sessionStorage.setItem('userId',userId)
       this.$router.push({path: '/patientInfo'})
     },
-    // fetchData() {
-    //   this.listLoading = true
-    //   getList().then(response => {
-    //     this.list = response.data.items
-    //     this.listLoading = false
-    //   })
-    // }
+    //获取绑定列表
+    fetchData() {
+      this.listLoading = true
+      getMyBindingPatientList().then(response => {
+        this.list = response.data
+      })
+    },
+    //根据姓名查询
+    search(){
+      getUserListByFilter({
+        searchStr: this.searchStr
+      }).then(res => {
+        if(res.code == 0){
+          this.$message({
+            type: 'success',
+            message: '查询成功'
+          })
+          this.list = res.data
+        }
+      })
+    }
   }
 }
 </script>

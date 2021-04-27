@@ -60,8 +60,8 @@
       <el-table-column label="操作" align="center" width="170">
         <template slot-scope="scope">
           <div style="display: flex;">
-            <el-button type="primary">同意</el-button>
-            <el-button type="danger">拒绝</el-button>
+            <el-button type="primary" @click="pass(scope.row.userId)">同意</el-button>
+            <el-button type="danger" @click="reject(scope.row.userId)">拒绝</el-button>
           </div>
         </template>
       </el-table-column>
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import { getApplyingPatientList,processPatientApplying } from '@/api/table'
 
 export default {
   filters: {
@@ -85,21 +85,42 @@ export default {
   },
   data() {
     return {
-      list: ['1'],
+      list: [],
       listLoading: true
     }
   },
-  created() {
-    // this.fetchData()
+  mounted() {
+    this.fetchData()
   },
   methods: {
-    // fetchData() {
-    //   this.listLoading = true
-    //   getList().then(response => {
-    //     this.list = response.data.items
-    //     this.listLoading = false
-    //   })
-    // }
+    //获取申请患者列表
+    fetchData() {
+      this.listLoading = true
+      getApplyingPatientList().then(response => {
+         this.list = response.data
+      })
+    },
+    //通过或拒绝请求函数
+    processPatientApplying(userId,result){
+      let params = {
+        userId: userId,
+        result: result
+      }
+      processPatientApplying(params).then(res => {
+        this.fetchData()
+      })
+    },
+    //通过申请
+    pass(userId){
+      let result = 'Y'
+      this.processPatientApplying(userId, result)
+      
+    },
+    //拒绝申请
+    reject(userId){
+      let result = 'N'
+      this.processPatientApplying(userId, result)
+    },
   }
 }
 </script>

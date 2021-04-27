@@ -103,7 +103,7 @@ export default {
     }
     return {
       registerForm: {
-        doctorAccount: '18825482506',
+        doctorAccount: '18825482501',
         doctorId: '441424199505052048',
         doctorName: '诗诗',
         doctorPassword: '123456'
@@ -138,7 +138,9 @@ export default {
     },
     handleRegister(){
       this.$store.dispatch('user/register',this.registerForm).then(() => {
-        console.log(res)
+        this.$router.push({
+          path: '/login'
+        })
       })
     }
     // handleLogin() {

@@ -116,15 +116,25 @@ export const constantRoutes = [
       }
     ]
   },
+
   {
-    path: '/publishArticle',
+    path: '/article',
     component: Layout,
+    redirect: '/article',
+    name: 'article',
+    meta: { title: '文章', icon: 'publishArticle' },
     children: [
       {
         path: '/publishArticle',
         name: 'publishArticle',
         component: () => import('@/views/publishArticle/index'),
         meta: { title: '文章发布', icon: 'publishArticle' }
+      },
+      {
+        path: '/myArticle',
+        name: 'myArticle',
+        component: () => import('@/views/myArticle/index'),
+        meta: { title: '我的文章', icon: 'publishArticle' }
       }
     ]
   },

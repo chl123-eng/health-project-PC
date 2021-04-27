@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import axios from 'axios'
 
 export function login(params) {
   return request({
@@ -19,7 +20,10 @@ export function register(data) {
   return request({
     url: '/chp/doctor/account/doctorRegister',
     method: 'post',
-    data
+    data,
+    headers: {
+      "Content-Type": "application/json"
+    }
   })
 }
 
@@ -28,5 +32,12 @@ export function bindingInformation(data) {
     url: 'chp/doctor/account/bindingInformation',
     method: 'post',
     data
+  })
+}
+
+export function applyingReview() {
+  return request({
+    url: 'chp/doctor/account/applyingReview',
+    method: 'get'
   })
 }

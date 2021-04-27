@@ -3,34 +3,34 @@
     <el-form ref="form" :model="form" label-width="120px" inline style="width: 100%">
       <!-- <img src="@/assets/查看病历.jpg" alt=""> -->
       <el-form-item label="昵称">
-        <el-input v-model="form.nickname" style="width: 300px"/>
+        <el-input v-model="form.nickname" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="姓名">
-        <el-input v-model="form.userName" style="width: 300px"/>
+        <el-input v-model="form.userName" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="性别">
-        <el-radio-group v-model="form.userSexName" style="width: 300px">
+        <el-radio-group v-model="form.userSexName" style="width: 300px" disabled>
           <el-radio label="男"></el-radio>
           <el-radio label="女"></el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="年龄(岁)">
-        <el-input v-model="form.userAge" style="width: 300px"/>
+        <el-input v-model="form.userAge" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="联系方式">
-        <el-input v-model="form.userPhone" style="width: 300px"/>
+        <el-input v-model="form.userPhone" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="身份证号">
-        <el-input v-model="form.userId" style="width: 300px"/>
+        <el-input v-model="form.userId" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="就诊医疗机构">
-        <el-input v-model="form.visitMedOrg" style="width: 300px"/>
+        <el-input v-model="form.visitMedOrg" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="就诊科室">
-        <el-input v-model="form.visitDept" style="width: 300px"/>
+        <el-input v-model="form.visitDept" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="肾病分期">
-        <el-input v-model="form.illStage" style="width: 300px"/>
+        <el-input v-model="form.illStage" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="头像" style="width: 420px; height: 100px">
         <el-avatar :src="form.userPhoto" style="width: 100px; height: 100px"></el-avatar>
@@ -39,7 +39,7 @@
     <el-tabs v-model="activeName">
       <el-tab-pane label="体征记录" name="symbolRecord">
         <el-table
-          :data="list"
+          :data="recordList"
           element-loading-text="Loading"
           border
           fit
@@ -52,7 +52,7 @@
           </el-table-column>
           <el-table-column label="记录时间" align="center">
             <template slot-scope="scope">
-              {{ scope.row.recordTime }}
+              {{ dateFormat('YYYY-mm-dd', scope.row.recordTime) }}
             </template>
           </el-table-column>
           <el-table-column label="收缩压" align="center">
@@ -95,7 +95,7 @@
       <el-tab-pane label="病历记录" name="pictureRecord">
         
         <el-table
-          :data="list"
+          :data="recordPictureList"
           element-loading-text="Loading"
           border
           fit
@@ -108,7 +108,7 @@
           </el-table-column>
           <el-table-column label="记录时间" align="center">
             <template slot-scope="scope">
-              {{ scope.row.recordTime }}
+               {{ dateFormat('YYYY-mm-dd', scope.row.recordTime) }}
             </template>
           </el-table-column>
           <el-table-column label="查看病历" align="center">
@@ -116,7 +116,8 @@
               <el-image 
                 style="width: 50px; height: 40px"
                 :src="url" 
-                :preview-src-list="srcList">
+                :preview-src-list="srcList"
+                @click="preview(scope.row.groupNo)">
               </el-image>
             </template>
           </el-table-column>
@@ -130,19 +131,25 @@
 </template>
 
 <script>
+import {getPatientInformationById, getUserRecordDTOList, getUserRecordPictureDTOList, getPatientRecordPictureDTOByGroupNo} from '@/api/table'
 export default {
   data() {
     return {
-      list: ['1','2'],
+      recordPictureList: [],
+      recordList: [],
       form: {
       },
       activeName: 'symbolRecord',
       url: 'http://img2.3png.com/59cf199270d052b007ae6980299f3db4ab5a.png',
-      srcList: [
-        'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-        'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-      ]
+      srcList: [],
+      recordPicture: [],
+      src: []
     }
+  },
+  mounted(){
+    this.getPatientInformationById()
+    this.getUserRecordPictureDTOList()
+    this.getUserRecordDTOList()
   },
   methods: {
     toBindPatient() {
@@ -150,10 +157,68 @@ export default {
         path: "/bindPatientList"
       })
     },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
+     //日期的转换
+      dateFormat(fmt, date) {
+        let ret = ''
+        date = new Date(date)
+        const opt = {
+          'Y+': date.getFullYear().toString(), // 年
+          'm+': date.getMonth().toString(), // 月
+          'd+': date.getDate().toString() // 日
+          // 有其他格式化字符需求可以继续添加，必须转化成字符串
+        }
+        for (let k in opt) {
+          ret = new RegExp('(' + k + ')').exec(fmt)
+          if (ret) {
+            fmt = fmt.replace(
+              ret[1],
+              ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, '0')
+            )
+          }
+        }
+        return fmt
+      },
+    //获取患者信息接口
+    getPatientInformationById(){
+      let params = {
+        userId: sessionStorage.getItem('userId')
+      }
+      getPatientInformationById(params).then(res => {
+        this.form = res.data
+      })
+    },
+    //获得患者体征信息
+    getUserRecordDTOList(){
+       let params = {
+        userId: sessionStorage.getItem('userId')
+      }
+      getUserRecordDTOList(params).then(res => {
+        this.recordList = res.data
+      })
+    },
+     //获得患者病历信息
+    getUserRecordPictureDTOList(){
+       let params = {
+        userId: sessionStorage.getItem('userId')
+      }
+      getUserRecordPictureDTOList(params).then(res => {
+        this.recordPictureList = res.data
+      })
+    },
+    //点击获得某组病历图片
+    preview(groupNo){
+      this.srcList = []
+       let params = {
+        patientId: sessionStorage.getItem('userId'),
+        groupNo: groupNo
+      }
+      getPatientRecordPictureDTOByGroupNo(params).then(res => {
+        this.recordPicture = res.data
+        for(let i = 0; i < this.recordPicture.length; i++){
+          this.srcList.push(this.recordPicture[i].photoAddress)
+        }
+        console.log(this.srcList);
+        
       })
     }
   }
