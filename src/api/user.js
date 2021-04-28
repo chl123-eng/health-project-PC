@@ -41,3 +41,34 @@ export function applyingReview() {
     method: 'get'
   })
 }
+
+export function publishArticle(data) {
+  return request({
+    url: 'chp/doctor/article/publishArticle',
+    method: 'post',
+    data
+  })
+}
+
+export function getMyArticleList() {
+  return request({
+    url: 'chp/doctor/article/getMyArticleList',
+    method: 'get',
+  })
+}
+
+export function deleteMyArticleByArticleId(params) {
+  return request({
+    url: 'chp/doctor/article/deleteMyArticleByArticleId',
+    method: 'delete',
+    params
+  })
+}
+
+export function getMyArticleByArticleId(params) {
+  return request({
+    url: 'chp/doctor/article/getMyArticleByArticleId',
+    method: 'get',
+    params
+  })
+}
