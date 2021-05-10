@@ -27,7 +27,14 @@
         <el-input v-model="form.doctorId" style="width: 300px" :disabled="disabled"/>
       </el-form-item>
       <el-form-item label="职称">
-        <el-input v-model="form.doctorTitle" style="width: 300px" :disabled="disabled"/>
+          <el-select v-model="form.doctorTitle" placeholder="请选择" :disabled="disabled">
+            <el-option
+              v-for="item in doctorTitles"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
       </el-form-item>
       <el-form-item label="所属科室">
         <el-input v-model="form.doctorDept" style="width: 300px" :disabled="disabled"/>
@@ -80,8 +87,20 @@ import { param2Obj } from '../../utils'
 export default {
   data() {
     return {
-      form: {
-      },
+      form: {},
+      doctorTitles: [{
+        value: '主任医师',
+        label: '主任医师'
+      },{
+        value: '副主任医师',
+        label: '副主任医师'
+      },{
+        value: '主治医师',
+        label: '主治医师'
+      },{
+        value: '住院医师',
+        label: '住院医师'
+      }],
       disabled: false,
       checkState: '',
       avatarPicture:[],

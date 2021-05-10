@@ -124,7 +124,7 @@ export default {
         return '待审核'
       }else if(status == 'CHECKOUT'){
         return '审核不通过'
-      }else if(status == 'BACK'){
+      }else if(status == 'UNPUBLISH'){
         return '管理员撤销'
       }else {
         return '审核通过'
