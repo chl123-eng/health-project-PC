@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">慢性肾脏病服务平台</h3>
+        <h3 class="title">慢性肾脏病健康服务平台</h3>
       </div>
 
       <el-form-item prop="username">
@@ -12,7 +12,7 @@
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
+          v-model="loginForm.account"
           placeholder="Username"
           name="username"
           type="text"
@@ -56,6 +56,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { login } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -76,7 +77,7 @@ export default {
     // }
     return {
       loginForm: {
-        username: '',
+        account: '',
         password: ''
       },
       // loginRules: {
@@ -114,9 +115,12 @@ export default {
       })
     },
     handleLogin() {
-      this.$store.dispatch('user/login', this.loginForm).then(() => {
-        this.$router.push({ path: '/' })
-        this.loading = false
+      login(this.loginForm).then(response => {
+        if(response.code == '0'){
+          sessionStorage.setItem('jwtToken', response.data)
+          this.$router.push({ path: '/home' })
+          this.loading = false
+        }
       }).catch(() => {
         this.loading = false
       })

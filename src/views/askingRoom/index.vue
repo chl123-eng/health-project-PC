@@ -57,12 +57,6 @@ export default {
     this.getMessageList()
   },
   methods: {
-    //获取历史消息
-    getMessageList(){
-      getMessageList().then(response => {
-        this.allMsgList = response.data
-      })
-    },
     //获取用户id
     getUserId(){
       this.curUserId = JSON.parse(sessionStorage.getItem('doctorInfo')).doctorId
@@ -71,8 +65,13 @@ export default {
     },
     //获取绑定患者列表
     getPatientList() {
-      getMyBindingPatientList().then(response => {
-        this.patientList = response.data
+      getMyBindingPatientList().then(res => {
+        if(res.returnCode == 500){
+          this.$message({
+            message: res.returnMessage
+          })
+        }
+        this.patientList = res.resultList
       })
     },
     initWebSocket: function (userId) {      
@@ -98,13 +97,7 @@ export default {
 		websocketclose: function (e) {
 			if(this.curUserId != null){
         this.initWebSocket(this.curUserId, 99999999)
-				// if(this.curSessionId != null){
-				// 	this.initWebSocket(this.curUserId, this.curSessionId)
-				// }else{
-				// 	this.initWebSocket(this.curUserId, 99999999)
-				// }
-			}
-			console.log("connection closed",e);     
+			}   
 			console.log(e);              
     },
     // 消息发送
@@ -137,22 +130,12 @@ export default {
         }
       }
     },
-    // 获取消息数据
-		// msgList(sessionId){
-		// 	let thus = this
-		// 	axios.get('http://127.0.0.1:1997/msgList?sessionId=' + sessionId)
-		// 	.then(function (response) {
-		// 		if(response.data.code == -1){
-		// 			return thus.$message.error(response.data.errDesc);
-		// 		}
-		// 		thus.list = response.data.data
-		// 		// 从新获取列表
-		// 		// thus.sessionListAlready()
-		// 	})
-		// 	.catch(function (error) {
-		// 		console.log(error);
-		// 	});
-		// },
+    //获取历史消息
+    getMessageList(){
+      getMessageList().then(response => {
+        this.allMsgList = response.data
+      })
+    },
   }
 }
 </script>

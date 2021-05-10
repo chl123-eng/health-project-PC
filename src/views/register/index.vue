@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="registerForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
         <h3 class="title">慢性肾脏病服务平台</h3>
@@ -63,6 +63,7 @@
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
+
         />
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
@@ -83,13 +84,14 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { register } from '@/api/user'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (value.length < 1) {
-        callback(new Error('请输入正确的账号'))
+    const validatePhonePass = (rule, value, callback) => {
+      if (/^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{9}$/.test(value)) {
+        callback(new Error('请输入正确的手机号'))
       } else {
         callback()
       }
@@ -102,14 +104,9 @@ export default {
       }
     }
     return {
-      registerForm: {
-        doctorAccount: '18825482501',
-        doctorId: '441424199505052048',
-        doctorName: '诗诗',
-        doctorPassword: '123456'
-      },
-      loginRules: {
-        doctorName: [{ required: true, trigger: 'blur', validator: validateUsername }],
+      registerForm: {},
+      registerRules: {
+        doctorAccount: [{ required: true, trigger: 'blur', validator: validatePhonePass }],
         doctorPassword: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
@@ -137,10 +134,14 @@ export default {
       })
     },
     handleRegister(){
-      this.$store.dispatch('user/register',this.registerForm).then(() => {
-        this.$router.push({
-          path: '/login'
-        })
+      this.$refs.registerForm.validate(valid => {
+        if(valid){
+          register(this.registerForm).then(() => {
+            this.$router.push({
+              path: '/login'
+            })
+          })
+        }
       })
     }
     // handleLogin() {

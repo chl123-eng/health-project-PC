@@ -50,10 +50,19 @@ export function publishArticle(data) {
   })
 }
 
-export function getMyArticleList() {
+export function getMyArticleList(params) {
   return request({
     url: 'chp/doctor/article/getMyArticleList',
     method: 'get',
+    params
+  })
+}
+
+export function updateArticle(data) {
+  return request({
+    url: 'chp/doctor/article/updateArticle',
+    method: 'post',
+    data
   })
 }
 
@@ -70,5 +79,21 @@ export function getMyArticleByArticleId(params) {
     url: 'chp/doctor/article/getMyArticleByArticleId',
     method: 'get',
     params
+  })
+}
+
+export function getProteinuria(data) {
+  return request({
+    url: 'chp/doctor/analysis/getProteinuria',
+    method: 'post',
+    data
+  })
+}
+
+export function getBloodPressure(data) {
+  return request({
+    url: 'chp/doctor/analysis/getBloodPressure',
+    method: 'post',
+    data
   })
 }

@@ -10,14 +10,20 @@
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img src='https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' class="user-avatar">
+        <div class="avatar-wrapper" style="display: flex">
+          <div style="font-size: 20px;font-weight: bold;margin-right: 20px">欢迎您，{{form.doctorName}}</div>
+          <img :src='form.doctorPhoto' class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/personalInfo">
             <el-dropdown-item>
               个人中心
+            </el-dropdown-item>
+          </router-link>
+          <router-link to="/messageInfo">
+            <el-dropdown-item>
+              我的公告
             </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided @click.native="logout">
@@ -30,6 +36,7 @@
 </template>
 
 <script>
+import { getInfo } from '@/api/user'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
@@ -42,7 +49,24 @@ export default {
   computed: {
     ...mapGetters(['sidebar', 'avatar'])
   },
+  data(){
+    return {
+      form: {}
+    }
+  },
+  mounted(){
+    this.getInfo()
+  },
   methods: {
+    //获取个人信息
+    getInfo(){
+      getInfo().then(res => {
+        this.form = res.data
+        if(this.form.checkState == "CHECKED"){
+          this.disabled = true
+        }
+      })
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },

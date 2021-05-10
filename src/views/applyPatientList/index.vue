@@ -66,6 +66,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      style="margin-top: 20px"
+      @current-change="handleCurrPage"
+      @size-change="handlePageSize"
+      :current-page="currPage"
+      :page-size="pageSize"
+      :page-sizes="[5,10,15]"
+      :total="total"
+      layout="total, sizes, prev, pager, next, jumper">
+    </el-pagination>
   </div>
 </template>
 
@@ -86,18 +97,41 @@ export default {
   data() {
     return {
       list: [],
-      listLoading: true
+      listLoading: true,
+      total: 100,
+      currPage: 1,
+      pageSize: 5
     }
   },
   mounted() {
     this.fetchData()
   },
   methods: {
+      //当前页改变
+    handleCurrPage(page){
+      this.currPage = page
+      this.fetchData()
+    },
+    //每页数改变
+    handlePageSize(size){
+      this.pageSize = size
+      this.fetchData()
+    },
     //获取申请患者列表
     fetchData() {
       this.listLoading = true
-      getApplyingPatientList().then(response => {
-         this.list = response.data
+      const params = {
+        currentPage: this.currPage,
+        pageSize: this.pageSize
+      }
+      getApplyingPatientList(params).then(response => {
+        this.list = response.resultList
+        this.total = response.total
+        if(response.returnCode == 500){
+          this.$message({
+            message: response.returnMessage
+          })
+        }
       })
     },
     //通过或拒绝请求函数
@@ -124,3 +158,9 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.el-pagination {
+  position: absolute;
+  right: 20px;
+}
+</style>

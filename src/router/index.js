@@ -51,7 +51,6 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/home',
     children: [{
       path: '/home',
       name: 'home',
@@ -63,6 +62,11 @@ export const constantRoutes = [
     path: '/personalInfo',
     name: 'personalInfo',
     component: () => import('@/views/personalInfo/index')
+  },
+  {
+    path: '/messageInfo',
+    name: 'messageInfo',
+    component: () => import('@/views/messageInfo/index')
   },
   {
     path: '/patientInfo',
@@ -116,6 +120,18 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/intelligenceDecision',
+    component: Layout,
+    children: [
+      {
+        path: '/intelligenceDecision',
+        name: 'intelligenceDecision',
+        component: () => import('@/views/intelligenceDecision/index'),
+        meta: { title: '辅助分析', icon: 'intelligenceDecision' }
+      }
+    ]
+  },
 
   {
     path: '/article',
@@ -139,64 +155,6 @@ export const constantRoutes = [
     ]
   },
 
-  // {
-  //   path: '/nested',
-  //   component: Layout,
-  //   redirect: '/nested/menu1',
-  //   name: 'Nested',
-  //   meta: {
-  //     title: 'Nested',
-  //     icon: 'nested'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'menu1',
-  //       component: () => import('@/views/nested/menu1/index'), // Parent router-view
-  //       name: 'Menu1',
-  //       meta: { title: 'Menu1' },
-  //       children: [
-  //         {
-  //           path: 'menu1-1',
-  //           component: () => import('@/views/nested/menu1/menu1-1'),
-  //           name: 'Menu1-1',
-  //           meta: { title: 'Menu1-1' }
-  //         },
-  //         {
-  //           path: 'menu1-2',
-  //           component: () => import('@/views/nested/menu1/menu1-2'),
-  //           name: 'Menu1-2',
-  //           meta: { title: 'Menu1-2' },
-  //           children: [
-  //             {
-  //               path: 'menu1-2-1',
-  //               component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-  //               name: 'Menu1-2-1',
-  //               meta: { title: 'Menu1-2-1' }
-  //             },
-  //             {
-  //               path: 'menu1-2-2',
-  //               component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-  //               name: 'Menu1-2-2',
-  //               meta: { title: 'Menu1-2-2' }
-  //             }
-  //           ]
-  //         },
-  //         {
-  //           path: 'menu1-3',
-  //           component: () => import('@/views/nested/menu1/menu1-3'),
-  //           name: 'Menu1-3',
-  //           meta: { title: 'Menu1-3' }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       path: 'menu2',
-  //       component: () => import('@/views/nested/menu2/index'),
-  //       name: 'Menu2',
-  //       meta: { title: 'menu2' }
-  //     }
-  //   ]
-  // },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

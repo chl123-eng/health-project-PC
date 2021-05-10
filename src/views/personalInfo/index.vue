@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="120px" inline style="width: 100%">
+       <el-form-item label="审核状态" prop="checkState">
+         <el-input v-model='checkState' style="width: 300px" readonly></el-input>
+          <!-- {{filterStatus(scope.row.checkState)}} -->
+       </el-form-item>
+       <el-form-item label="未通过理由" style="width: 100%">
+        <el-input v-model="form.nocheckReason" type="textarea"  :autosize="{ minRows: 2, maxRows: 4}" style="width: 1160px" readonly/>
+      </el-form-item>
       <el-form-item label="姓名">
         <el-input v-model="form.doctorName" style="width: 300px" :disabled="disabled"/>
       </el-form-item>
@@ -19,23 +26,14 @@
       <el-form-item label="身份证号码">
         <el-input v-model="form.doctorId" style="width: 300px" :disabled="disabled"/>
       </el-form-item>
-      <el-form-item label="所属省份">
-        <el-input v-model="form.doctorProvince" style="width: 300px" :disabled="disabled"/>
-      </el-form-item>
       <el-form-item label="职称">
         <el-input v-model="form.doctorTitle" style="width: 300px" :disabled="disabled"/>
-      </el-form-item>
-      <el-form-item label="所属医疗机构">
-        <el-input v-model="form.doctorOrganization" style="width: 300px" :disabled="disabled"/>
       </el-form-item>
       <el-form-item label="所属科室">
         <el-input v-model="form.doctorDept" style="width: 300px" :disabled="disabled"/>
       </el-form-item>
       <el-form-item label="所属省份">
         <el-input v-model="form.doctorProvince" style="width: 300px" :disabled="disabled"/>
-      </el-form-item>
-      <el-form-item label="职称">
-        <el-input v-model="form.doctorTitle" style="width: 300px" :disabled="disabled"/>
       </el-form-item>
       <el-form-item label="所属医疗机构">
         <el-input v-model="form.doctorOrganization" style="width: 300px" :disabled="disabled"/>
@@ -50,7 +48,9 @@
           style="width: 300px"
           class="upload-demo"
           list-type="picture"
-          :http-request="uploadFile">
+          :limit="1"
+          :on-change="uploadAvatar"
+          :file-list="avatarPicture">
           <el-button size="small" type="primary" :disabled="disabled">选取头像</el-button>
         </el-upload>
       </el-form-item>
@@ -60,7 +60,9 @@
           :auto-upload="false"
           class="upload-demo"
           list-type="picture"
-          :http-request="uploadFile">
+          :on-change="uploadCertification"
+          :limit="1"
+          :file-list="certification">
           <el-button size="small" type="primary" :disabled="disabled">选取文件</el-button>
         </el-upload>
       </el-form-item>
@@ -80,35 +82,85 @@ export default {
     return {
       form: {
       },
-      disabled: false
+      disabled: false,
+      checkState: '',
+      avatarPicture:[],
+      certification:[]
     }
   },
   mounted(){
-    //this.form = JSON.parse(sessionStorage.getItem('doctorInfo'))
     this.getInfo()
   },
   methods: {
+    //上传头像
+    uploadAvatar(file){
+      this.form.doctorPhotoFile = file.raw
+    },
+    //上传证书
+    uploadCertification(file){
+      this.form.certificationFile = file.raw
+    },
     //获取个人信息
     getInfo(){
       getInfo().then(res => {
         this.form = res.data
-        if(this.form.checkState == "CHECKED"){
+        this.avatarPicture=[]
+        this.certification=[]
+        this.avatarPicture.push({url: this.form.doctorPhoto})
+
+        if(this.form.certification !== null){
+          this.certification.push({url: this.form.certification})
+        }else{
+          this.certification=[]
+        }
+        
+       if(this.form.checkState == "CHECKED"){
           this.disabled = true
+          this.checkState = '审核通过'
+        }else if(this.form.checkState == "UNCHECKED"){
+          this.checkState = '未审核'
+        }else if(this.form.checkState == "NO_CHECKED"){
+          this.checkState = '审核不通过'
+        }else{
+          this.checkState = '未认证'
         }
       })
     },
-    //上传头像及证书
-    uploadFile(f){
-      let formData = new FormData()
-      formData.append('file',f.file)
-      console.log(formData)
-    },
     //完善信息
     bindingInformation(){
-      this.uploadFile()
-      // bindingInformation(this.form).then(response => {
-      //   console.log(response)
-      // })
+      this.form.doctorSex = this.form.doctorSexName == '男'?'1':'0' 
+      const doctorForm = new FormData();
+      doctorForm.append('doctorName', this.form.doctorName)
+      doctorForm.append('doctorSexName', this.form.doctorSexName)
+      doctorForm.append('doctorSex', this.form.doctorSex)
+      doctorForm.append('doctorAge', this.form.doctorAge)
+      doctorForm.append('doctorPhone', this.form.doctorPhone)
+      doctorForm.append('doctorId', this.form.doctorId)
+      doctorForm.append('doctorTitle', this.form.doctorTitle)
+      doctorForm.append('doctorOrganization', this.form.doctorOrganization)
+      doctorForm.append('doctorDept', this.form.doctorDept)
+      doctorForm.append('doctorProvince', this.form.doctorProvince)
+      doctorForm.append('doctorIntroduce', this.form.doctorIntroduce)
+      if(this.form.doctorPhotoFile !== null){
+        doctorForm.append('doctorPhotoFile', this.form.doctorPhotoFile)
+      }
+      // else{
+      //   doctorForm.append('doctorPhotoFile', JSON.parse(sessionStorage.getItem('avatarPicture')))
+      // }
+      if(this.form.certificationFile !== null){
+        doctorForm.append('certificationFile', this.form.certificationFile)
+      }
+      // else{
+      //   doctorForm.append('certificationFile',JSON.parse(sessionStorage.getItem('certification')))
+      // }
+      bindingInformation(doctorForm).then(response => {
+        if(response.code == '0'){
+          this.$message(response.msg)
+          sessionStorage.setItem('doctorInfo',response.data)
+        }
+        this.getInfo()
+        
+      })
     },
     toHome(){
       this.$router.push({

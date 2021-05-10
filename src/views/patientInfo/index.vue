@@ -50,7 +50,7 @@
               {{ scope.$index + 1}}
             </template>
           </el-table-column>
-          <el-table-column label="记录时间" align="center">
+          <el-table-column label="检查时间" align="center">
             <template slot-scope="scope">
               {{ dateFormat('YYYY-mm-dd', scope.row.recordTime) }}
             </template>
@@ -75,7 +75,7 @@
               {{ scope.row.urine }}
             </template>
           </el-table-column>
-          <el-table-column label="蛋白尿" align="center">
+          <el-table-column label="尿蛋白" align="center">
             <template slot-scope="scope">
               {{ scope.row.proteinuria }}
             </template>
@@ -124,7 +124,18 @@
         </el-table>
       </el-tab-pane>
     </el-tabs>
-    <div style="width: 100%; display: flex; justify-content: center; margin-top: 30px">
+     <el-pagination
+      background
+      style="margin-top: 20px"
+      @current-change="handleCurrPage"
+      @size-change="handlePageSize"
+      :current-page="currPage"
+      :page-size="pageSize"
+      :page-sizes="[1,2,3]"
+      :total="total"
+      layout="total, sizes, prev, pager, next, jumper">
+    </el-pagination>
+    <div style="width: 100%; display: flex; justify-content: center; margin-top: 100px">
       <el-button type="primary" @click="toBindPatient" >返回</el-button>
     </div>
   </div>
@@ -143,7 +154,10 @@ export default {
       url: 'http://img2.3png.com/59cf199270d052b007ae6980299f3db4ab5a.png',
       srcList: [],
       recordPicture: [],
-      src: []
+      src: [],
+      total: 100,
+      currPage: 1,
+      pageSize: 1
     }
   },
   mounted(){
@@ -152,6 +166,17 @@ export default {
     this.getUserRecordDTOList()
   },
   methods: {
+     //当前页改变
+    handleCurrPage(page){
+      this.currPage = page
+      
+      this.getUserRecordDTOList()
+    },
+    //每页数改变
+    handlePageSize(size){
+      this.pageSize = size
+      this.getUserRecordDTOList()
+    },
     toBindPatient() {
       this.$router.push({
         path: "/bindPatientList"
@@ -163,7 +188,7 @@ export default {
         date = new Date(date)
         const opt = {
           'Y+': date.getFullYear().toString(), // 年
-          'm+': date.getMonth().toString(), // 月
+          'm+': (date.getMonth()+1).toString(), // 月
           'd+': date.getDate().toString() // 日
           // 有其他格式化字符需求可以继续添加，必须转化成字符串
         }
@@ -190,10 +215,13 @@ export default {
     //获得患者体征信息
     getUserRecordDTOList(){
        let params = {
-        userId: sessionStorage.getItem('userId')
+        userId: sessionStorage.getItem('userId'),
+        currentPage: this.currPage,
+        pageSize: this.pageSize
       }
       getUserRecordDTOList(params).then(res => {
-        this.recordList = res.data
+        this.recordList = res.resultList
+        this.total = res.total
       })
     },
      //获得患者病历信息
@@ -231,6 +259,10 @@ export default {
 }
 .line{
   text-align: center;
+}
+.el-pagination {
+  position: absolute;
+  right: 20px;
 }
 </style>
 

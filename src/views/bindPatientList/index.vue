@@ -73,6 +73,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      style="margin-top: 20px"
+      @current-change="handleCurrPage"
+      @size-change="handlePageSize"
+      :current-page="currPage"
+      :page-size="pageSize"
+      :page-sizes="[1,2,3]"
+      :total="total"
+      layout="total, sizes, prev, pager, next, jumper">
+    </el-pagination>
   </div>
 </template>
 
@@ -94,23 +105,50 @@ export default {
     return {
       searchStr: '',
       list: [],
-      listLoading: true
+      listLoading: true,
+      total: 100,
+      currPage: 1,
+      pageSize: 1
     }
   },
-  created() {
-    this.fetchData()
+  mounted() {
+    this.getMyBindingPatientList()
   },
   methods: {
+    //当前页改变
+    handleCurrPage(page){
+      this.currPage = page
+      console.log(this.currPage);
+      
+      this.getMyBindingPatientList()
+    },
+    //每页数改变
+    handlePageSize(size){
+      this.pageSize = size
+      console.log(this.pageSize);
+      
+      this.getMyBindingPatientList()
+    },
     //点击详情
     toPatientInfo(userId){
       sessionStorage.setItem('userId',userId)
       this.$router.push({path: '/patientInfo'})
     },
     //获取绑定列表
-    fetchData() {
+    getMyBindingPatientList() {
       this.listLoading = true
-      getMyBindingPatientList().then(response => {
-        this.list = response.data
+      const params = {
+        currentPage: this.currPage,
+        pageSize: this.pageSize
+      }
+      getMyBindingPatientList(params).then(response => {
+        if(response.returnCode == 500){
+          this.$message({
+            message: response.returnMessage
+          })
+        }
+        this.list = response.resultList
+        this.total = response.total
       })
     },
     //根据姓名查询
@@ -130,3 +168,9 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.el-pagination {
+  position: absolute;
+  right: 20px;
+}
+</style>

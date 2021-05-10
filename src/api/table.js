@@ -6,10 +6,11 @@ export function getApplyingPatientList() {
     method: 'get'
   })
 }
-export function getMyBindingPatientList() {
+export function getMyBindingPatientList(params) {
   return request({
     url: '/chp/doctor/patientService/getMyBindingPatientList',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
@@ -56,6 +57,13 @@ export function getUserRecordPictureDTOList(params) {
 export function getPatientRecordPictureDTOByGroupNo(params) {
   return request({
     url: '/chp/doctor/patientService/getPatientRecordPictureDTOByGroupNo',
+    method: 'get',
+    params
+  })
+}
+export function getNoticeList(params) {
+  return request({
+    url: '/chp/doctor/notice/getNoticeList',
     method: 'get',
     params
   })

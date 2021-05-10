@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px" inline style="width: 100%">
+    <el-form ref="form" label-width="120px" inline style="width: 100%">
       <el-form-item label="姓名">
         <el-input v-model="form.doctorName" style="width: 300px" readonly/>
       </el-form-item>
@@ -18,9 +18,6 @@
       </el-form-item>
       <el-form-item label="身份证号">
         <el-input v-model="form.doctorId" style="width: 300px" readonly/>
-      </el-form-item>
-      <el-form-item label="所属省份">
-        <el-input v-model="form.doctorProvince" style="width: 300px" readonly/>
       </el-form-item>
       <el-form-item label="职称">
         <el-input v-model="form.doctorTitle" style="width: 300px" readonly/>
@@ -51,30 +48,39 @@
         style="width: 100px; height: 100px"
         :src='form.certification'></el-image>
         </el-form-item>
-      <el-form-item style="position: absolute; left: 50%; margin-left: -108px; margin-top: 150px">
-        <el-button type="primary" @click="applyingReview" :disabled="disabled">申请医师资格</el-button>
+      <el-form-item style="position: absolute; left: 50%; margin-left: -108px; margin-top: 120px">
+        <el-button type="primary" @click="applyingReview" :disabled="disabled" v-show='show'>申请医师资格</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import {applyingReview} from '@/api/user'
+import {getInfo,applyingReview} from '@/api/user'
 export default {
   data() {
     return {
-      form: {
-      },
-      disabled: true
+      form: {},
+      disabled: true,
+      show: true
     }
   },
   mounted(){
-    this.form = JSON.parse(sessionStorage.getItem('doctorInfo'))
-    if(this.form.checkState == "CHECKED"){
-      this.disabled = true
-    }
+    this.getInfo()
   },
   methods: {
+    //获取个人信息
+    getInfo(){
+      getInfo().then(res => {
+        this.form = res.data
+        if(this.form.checkState == "CHECKED"){
+          this.disabled = true
+        }else{
+          this.disabled = false
+        }
+      })
+    },
+    //申请资格
     applyingReview(){
       applyingReview().then(res => {
         if(res.code === 0){
