@@ -126,7 +126,7 @@ export default {
       }
       getApplyingPatientList(params).then(response => {
         this.list = response.resultList
-        this.total = response.total
+        this.total = response.tot
         if(response.returnCode == 500){
           this.$message({
             message: response.returnMessage

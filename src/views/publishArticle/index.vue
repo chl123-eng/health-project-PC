@@ -1,24 +1,26 @@
 <template>
   <div class="container">
-    <el-form inline style="width: 100%;margin-left: 20px; margin-top: 10px" :model='article'>
-      <el-form-item label="类型" style="margin-right: 50px">
+    <el-form inline style="width: 100%;margin-left: 20px; margin-top: 10px" :model='article' :rules="formRules" ref="article">
+      <el-form-item label="类型" style="margin-right: 50px" prop="isDiet">
         <el-select v-model="article.isDiet" placeholder="请选择" width="300">
           <el-option
             v-for="item in articelTypes"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
+            :value="item.value"
+            clearable>
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="题目" style="margin-right: 50px">
-        <el-input v-model="article.articleTitle" style="width: 300px"/>
+      <el-form-item label="题目" style="margin-right: 50px" prop="articleTitle">
+        <el-input v-model="article.articleTitle" style="width: 300px" clearable/>
       </el-form-item>
-      <el-form-item label="作者" style="margin-right: 50px">
-        <el-input v-model="article.publisherName" style="width: 300px"/>
+      <el-form-item label="作者" style="margin-right: 50px" prop="publisherName">
+        <el-input v-model="article.publisherName" style="width: 300px" clearable/>
       </el-form-item>
-      <el-form-item label="图片">
+      <el-form-item label="图片" prop="articlePicture" :rules="{ required: this.article.articlePictureFile == '' ? true : false, message: '请添加图片' }">
         <el-upload
+        style="width: 80px"
           action="#"
           :auto-upload="false"
           list-type="picture"
@@ -29,14 +31,17 @@
           <el-button size="small" type="primary" style="margin-top: -50px">选取</el-button>
         </el-upload>
       </el-form-item>
+      <el-form-item prop="articleText" :rules="{ required: this.article.articleText == '' ? true : false, message: '请输入内容' }">
+        <span class="tipTitle">正文</span>
+        <el-input class="hide" v-model="articleText" clearable></el-input>
+        <div id="editor" style="width: 1420px"></div>
+      </el-form-item>
     </el-form>
-    <span class="tipTitle">正文</span>
-      <div id="editor" style="width: 100%"></div>
-      <div class="pubilsh" style="margin-bottom: 20px" v-show="show">
-        <el-button type="primary" @click='publish' :disabled="disabled">发布</el-button>
-        <el-button type="primary" @click="save" :disabled="saveDisabled">修改保存</el-button>
-      </div>
+    <div class="pubilsh" style="margin-bottom: 20px" v-show="show">
+      <el-button type="primary" @click='publish("article")' :disabled="disabled">发布</el-button>
+      <el-button type="primary" @click="save" :disabled="saveDisabled">修改保存</el-button>
     </div>
+  </div>
 </template>
 
 <script>
@@ -49,7 +54,14 @@ export default {
     return {
       article: {
         articleNum: '',
+        isDiet: '',
+        articleTitle: '',
+        publisherName: '',
+        articlePicture: '',
+        articleText: '',
+        articlePictureFile: ''
       },
+      articleText: '',
       show: false,
       disabled: false,
       saveDisabled: true,
@@ -60,12 +72,29 @@ export default {
       },{
         value: 'Y',
         label: '饮食推荐'
-      }]
+      }],
+      formRules: {
+        isDiet: [
+          { required: true, message: '请输入文章类型', trigger: 'change' }
+        ],
+        articleTitle: [
+          { required: true, message: '请输入文章题目', trigger: 'blur' }
+        ],
+        publisherName: [
+          { required: true, message: '请输入作者', trigger: 'blur' }
+        ],
+        articlePicture: [
+          { required: true, message: '请添加图片' }
+        ],
+        articleText: [
+          { required: true, message: '请输入文章内容',trigger: 'change' }
+        ]
+      }
     }
   },
   mounted(){
     this.getInfo()
-    this.checkArticle()
+    //this.checkArticle()
   },
   beforeRouteLeave (to, from, next){
     sessionStorage.removeItem('article')
@@ -74,9 +103,22 @@ export default {
   methods: {
     uploadFile(file, fileList){
       this.article.articlePictureFile = file.raw
+      if(this.article.articlePictureFile !== ''){
+          this.$refs['article'].clearValidate('articlePicture')
+      }else{
+        this.$refs['article'].validateField('articlePicture')
+      }
+          
     },
     //获取个人信息
     getInfo(){
+      const editor = new E('#editor')
+      editor.config.height = 450
+      editor.config.onchange = (newHtml) => {
+        this.articleText = newHtml
+        this.article.articleText = newHtml
+      }
+      editor.create()
       getInfo().then(res => {
         if(res.data.checkState == 'CHECKED'){
           this.show = true
@@ -85,22 +127,35 @@ export default {
         }
       })
     },
-    publish(){
-      const form = new FormData();
-      form.append('isDiet', this.article.isDiet)
-      form.append('articlePictureFile', this.article.articlePictureFile)
-      form.append('articleTitle', this.article.articleTitle)
-      form.append('publisherName', this.article.publisherName)
-      form.append('articleText', this.article.articleText)
-      publishArticle(form).then(res => {
-        if(res.code == 0){
-          this.$message({
-            type: 'success',
-            message: '发布成功'
+    publish(formName){
+      // if(this.article.articlePictureFile !== ''){
+      //   this.$refs['article'].clearValidate('articlePicture')
+      // }else{
+      //   this.$refs['article'].validateField('articlePicture')
+      // }
+      // if(this.article.articleText !== ''){
+      //   this.$refs['article'].clearValidate('articleText')
+      // }
+      this.$refs[formName].validate((valid) => {
+          const form = new FormData();
+          form.append('isDiet', this.article.isDiet)
+          form.append('articlePictureFile', this.article.articlePictureFile)
+          form.append('articleTitle', this.article.articleTitle)
+          form.append('publisherName', this.article.publisherName)
+          form.append('articleText', this.article.articleText)
+          
+          publishArticle(form).then(res => {
+            if(res.code == 0){
+              this.$message({
+                type: 'success',
+                message: '发布成功'
+              })
+            }else {
+              this.$message.error({
+                message: '发布失败'
+              })
+            }
           })
-          this.article.articleText = ''
-
-        }
       })
     },
     save(){
@@ -128,12 +183,12 @@ export default {
     },
     //查看文章
     checkArticle(){
-      const editor = new E('#editor')
-      editor.config.height = 450
-      editor.config.onchange = (newHtml) => {
-        this.article.articleText = newHtml
-      }
-      editor.create()
+      // const editor = new E('#editor')
+      // editor.config.height = 450
+      // editor.config.onchange = (newHtml) => {
+      //   this.article.articleText = newHtml
+      // }
+      // editor.create()
       this.article.articleNum = JSON.stringify(sessionStorage.getItem('article')).articleNum
       if(JSON.parse(sessionStorage.getItem('article')) != null){
         let checkArticle = JSON.parse(sessionStorage.getItem('article'))
@@ -152,6 +207,7 @@ export default {
     //移除图片
     remove(file,fileList){
       this.articlePicture = fileList
+      this.article.articlePictureFile = ''
     }
   }
 }
@@ -175,4 +231,11 @@ export default {
 .el-button {
   margin-top: 20px;
 }
+.hide.el-input {
+  height: 0;
+  width: 0;
+  position: absolute;
+  overflow: hidden;
+}
+
 </style>

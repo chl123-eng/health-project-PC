@@ -36,7 +36,7 @@
         <el-avatar :src="form.userPhoto" style="width: 100px; height: 100px"></el-avatar>
       </el-form-item>
     </el-form>
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="changeTab">
       <el-tab-pane label="体征记录" name="symbolRecord">
         <el-table
           :data="recordList"
@@ -100,6 +100,7 @@
           border
           fit
           highlight-current-row
+          height="300"
         >
           <el-table-column align="center" label="序号" >
             <template slot-scope="scope">
@@ -133,6 +134,7 @@
       :page-size="pageSize"
       :page-sizes="[1,2,3]"
       :total="total"
+      v-if="disabled"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <div style="width: 100%; display: flex; justify-content: center; margin-top: 100px">
@@ -157,7 +159,8 @@ export default {
       src: [],
       total: 100,
       currPage: 1,
-      pageSize: 1
+      pageSize: 1,
+      disabled: false
     }
   },
   mounted(){
@@ -248,6 +251,15 @@ export default {
         console.log(this.srcList);
         
       })
+    },
+    changeTab(val){
+      if(val.name === 'symbolRecord'){
+        this.disabled = true
+      }else{
+        this.disabled = false
+      }
+      
+      
     }
   }
 }
