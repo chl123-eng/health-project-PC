@@ -1,9 +1,15 @@
 <template>
   <div class="login-container">
-    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="login-form" auto-complete="on" label-position="left">
-
+    <el-form
+      ref="registerForm"
+      :model="registerForm"
+      :rules="registerRules"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+    >
       <div class="title-container">
-        <h3 class="title">慢性肾脏病服务平台</h3>
+        <h3 class="title">慢性肾脏病健康服务平台</h3>
       </div>
 
       <el-form-item prop="doctorAccount">
@@ -63,27 +69,31 @@
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
-
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon
+            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+          />
         </span>
       </el-form-item>
       <div class="btns" style="display:flex;justify-content:space-around;">
-        <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">注册</el-button>
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;margin-bottom:30px;"
+          @click.native.prevent="handleRegister"
+        >注册</el-button>
       </div>
 
       <!-- <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
         <span> password: any</span>
       </div> -->
-
     </el-form>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 import { register } from '@/api/user'
 
 export default {
@@ -104,10 +114,19 @@ export default {
       }
     }
     return {
-      registerForm: {},
+      registerForm: {
+        doctorAccount: '',
+        doctorId: '',
+        doctorName: '',
+        doctorPassword: ''
+      },
       registerRules: {
-        doctorAccount: [{ required: true, trigger: 'blur', validator: validatePhonePass }],
-        doctorPassword: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        doctorAccount: [
+          { required: true, trigger: 'blur', validator: validatePhonePass }
+        ],
+        doctorPassword: [
+          { required: true, trigger: 'blur', validator: validatePassword }
+        ]
       },
       loading: false,
       passwordType: 'password',
@@ -133,13 +152,16 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleRegister(){
+    handleRegister() {
       this.$refs.registerForm.validate(valid => {
-        if(valid){
-          register(this.registerForm).then(() => {
-            this.$router.push({
-              path: '/login'
-            })
+        if (valid) {
+          register(this.registerForm).then(response => {
+            this.$message(response.msg)
+            if (response.code === 0) {
+              this.$router.push({
+                path: '/login'
+              })
+            }
           })
         }
       })
@@ -168,8 +190,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:#fff;
+$bg: #283443;
+$light_gray: #fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -212,9 +234,9 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;

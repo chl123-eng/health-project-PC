@@ -1,91 +1,134 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
-
+    <el-form
+      ref="Form"
+      :model="Form"
+      :rules="Rules"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+    >
       <div class="title-container">
         <h3 class="title">慢性肾脏病健康服务平台</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="account">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.account"
-          placeholder="Username"
-          name="username"
+          ref="account"
+          v-model="Form.account"
+          placeholder="请输入手机号"
+          name="account"
           type="text"
           tabindex="1"
           auto-complete="on"
         />
       </el-form-item>
-
-      <el-form-item prop="password">
+      <el-form-item prop="doctorId">
+        <span class="svg-container">
+          <svg-icon icon-class="user" />
+        </span>
+        <el-input
+          ref="doctorId"
+          v-model="Form.doctorId"
+          placeholder="请输入身份证号"
+          name="doctorId"
+          type="text"
+          tabindex="1"
+          auto-complete="on"
+        />
+      </el-form-item>
+      <div class="tip">注：重置成功后，密码为Abc123456</div>
+      <!-- <el-form-item prop="doctorPassword">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
+          ref="doctorPassword"
+          v-model="Form.doctorPassword"
           :type="passwordType"
-          placeholder="Password"
-          name="password"
+          placeholder="请输入密码"
+          name="doctorPassword"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon
+            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+          />
         </span>
       </el-form-item>
-      <div class="btns">
-        <div class="forgetPwd" @click="toResetPwd">重置密码</div>
-        <div class="register" @click="toRegister">注册</div>
-      </div>
-      <div class="btns" style="display:flex;justify-content:space-around;">
-        <el-button :loading="loading" type="primary" style="width:100%;margin-top:30px;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-      </div>
 
-      <!-- <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div> -->
+      <el-form-item prop="doctorPwdAgain">
+        <span class="svg-container">
+          <svg-icon icon-class="password" />
+        </span>
+        <el-input
+          :key="passwordType"
+          ref="doctorPwdAgain"
+          v-model="Form.doctorPwdAgain"
+          :type="passwordType"
+          placeholder="请再次输入密码"
+          name="doctorPwdAgain"
+          tabindex="2"
+          auto-complete="on"
+          @keyup.enter.native="handleLogin"
+        />
+        <span class="show-pwd" @click="showPwd">
+          <svg-icon
+            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+          />
+        </span>
+      </el-form-item> -->
+      <div class="btns" style="display:flex;justify-content:space-around;">
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;margin-bottom:30px;"
+          @click.native.prevent="resetPwd"
+        >重置密码</el-button>
+      </div>
 
     </el-form>
   </div>
 </template>
 
 <script>
-import { login } from '@/api/user'
-
+import { resetPassword } from '@/api/user'
 export default {
   name: 'Login',
   data() {
-    // const validateUsername = (rule, value, callback) => {
-    //   if (!validUsername(value)) {
-    //     callback(new Error('请输入正确的账号'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
-    // const validatePassword = (rule, value, callback) => {
-    //   if (value.length < 6) {
-    //     callback(new Error('密码不能少于六位'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
+    const validatePhonePass = (rule, value, callback) => {
+      if (/^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{9}$/.test(value)) {
+        callback(new Error('请输入正确的手机号'))
+      } else {
+        callback()
+      }
+    }
+    const validateId = (rule, value, callback) => {
+      if (/^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/.test(value)) {
+        callback(new Error('请输入正确的身份证号'))
+      } else {
+        callback()
+      }
+    }
     return {
-      loginForm: {
+      Form: {
         account: '',
-        password: ''
+        doctorId: ''
       },
-      // loginRules: {
-      //   username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-      //   password: [{ required: true, trigger: 'blur', validator: validatePassword }]
-      // },
+      Rules: {
+        account: [
+          { required: true, trigger: 'blur', validator: validatePhonePass }
+        ],
+        doctorId: [
+          { required: true, trigger: 'blur', validator: validateId }
+        ]
+      },
       loading: false,
       passwordType: 'password',
       redirect: undefined
@@ -110,45 +153,24 @@ export default {
         this.$refs.password.focus()
       })
     },
-    // 点击注册
-    toRegister() {
-      this.$router.push({
-        path: '/register'
-      })
-    },
-    // 忘记密码
-    toResetPwd() {
-      this.$router.push({
-        path: '/toForgetPwd'
-      })
-    },
-    handleLogin() {
-      login(this.loginForm).then(response => {
-        this.$message(response.msg)
-        if (response.code === 0) {
-          sessionStorage.setItem('jwtToken', response.data)
-          this.$router.push({ path: '/home' })
-          this.loading = false
+    resetPwd() {
+      this.$refs.Form.validate(valid => {
+        if (valid) {
+          resetPassword(this.Form).then(response => {
+            this.$message(response.msg)
+            if (response.code === 0) {
+              this.$message('重置成功')
+              setTimeout(() => {
+                this.$router.push({
+                  path: '/login'
+                })
+              }, 3000)
+            }
+          })
         }
-      }).catch(() => {
-        this.loading = false
       })
-      // this.$refs.loginForm.validate(valid => {
-      //   if (valid) {
-      //     this.loading = true
-      //     console.log(this.$store)
-      //     this.$store.dispatch('user/login', this.loginForm).then(() => {
-      //       this.$router.push({ path: this.redirect || '/' })
-      //       this.loading = false
-      //     }).catch(() => {
-      //       this.loading = false
-      //     })
-      //   } else {
-      //     console.log('error submit!!')
-      //     return false
-      //   }
-      // })
     }
+
   }
 }
 </script>
@@ -157,8 +179,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:#fff;
+$bg: #283443;
+$light_gray: #fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -169,25 +191,6 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
-  .btns{
-    display: flex;
-    .forgetPwd{
-      color: #74a6e4;
-       font-size: 14px;
-    }
-    .register {
-      width: fit-content;
-      position: absolute;
-      right: 40px;
-      font-size: 16px;
-      color: rgb(71, 231, 151);
-    }
-    .register:hover,
-    .forgetPwd:hover{
-      cursor: pointer;
-    }
-  }
-
   .el-input {
     display: inline-block;
     height: 47px;
@@ -220,9 +223,9 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;
@@ -279,6 +282,10 @@ $light_gray:#eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
+  }
+  .tip{
+    color: red;
+    margin-bottom: 10px;
   }
 }
 </style>

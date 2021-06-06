@@ -1,10 +1,16 @@
+/*
+ * @Author: 蔡惠霖
+ * @Date: 2021-05-30 11:04:15
+ * @LastEditors: 蔡惠霖
+ * @LastEditTime: 2021-05-30 16:56:02
+ * @FilePath: /health-project-PC/src/main.js
+ */
 import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
 

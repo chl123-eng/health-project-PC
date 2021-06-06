@@ -15,14 +15,20 @@ export function getInfo() {
     method: 'get'
   })
 }
-
+export function resetPassword(params) {
+  return request({
+    url: '/chp/doctor/account/resetPassword',
+    method: 'get',
+    params
+  })
+}
 export function register(data) {
   return request({
     url: '/chp/doctor/account/doctorRegister',
     method: 'post',
     data,
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     }
   })
 }

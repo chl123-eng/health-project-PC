@@ -1,7 +1,7 @@
 <template>
   <div style="display:flex">
-    <div id="uriaProtein" :class="className" :style="{height:'calc(70vh)',width:'calc(40%)',marginLeft: '100px',marginTop: '20px'}" />
-    <div id="bloodPressure" :class="className" :style="{height:'calc(70vh)',width:'calc(40%)',marginLeft: '100px',marginTop: '20px'}" />
+    <div id="uriaProtein" :class="className" :style="{height:'calc(70vh)',width:'calc(40%)',marginLeft: '100px',marginTop: '20px',border: '1px solid #999'}" />
+    <div id="bloodPressure" :class="className" :style="{height:'calc(70vh)',width:'calc(40%)',marginLeft: '100px',marginTop: '20px',border: '1px solid #999'}" />
   </div>
 </template>
 
@@ -118,13 +118,13 @@ export default {
       const proteinuriaRealValue = this.arrayFormat(proteinuriaRealValueList,'value')
       
       this.UriaProteinChart.setOption({
-        backgroundColor: '#344b58',
+        backgroundColor: '#fff',
         title: {
           text: '尿蛋白',
           x: '20',
           top: '20',
           textStyle: {
-            color: '#fff',
+            color: '#90979c',
             fontSize: '22'
           },
         },
@@ -261,26 +261,22 @@ export default {
       const diastolicBloodPressureHeightValue = this.arrayFormat(diastolicBloodPressureDTOList,'heightValue')
       const diastolicBloodPressureLowValue = this.arrayFormat(diastolicBloodPressureDTOList,'lowValue')
       const diastolicBloodPressureRealValue = this.arrayFormat(realValueList,'heightValue')
-      console.log(diastolicBloodPressureHeightValue,'舒张压最高');
-      console.log(diastolicBloodPressureLowValue,'舒张压最低');
-      console.log(diastolicBloodPressureRealValue,'舒张压');
+
       
       
       //收缩压
       const systolicBloodPressureDTOListHeightValue = this.arrayFormat(systolicBloodPressureDTOList,'heightValue')
       const systolicBloodPressureDTOListLowValue = this.arrayFormat(systolicBloodPressureDTOList,'lowValue')
       const systolicBloodPressureDTOListRealValue = this.arrayFormat(realValueList,'lowValue')
-      console.log(systolicBloodPressureDTOListHeightValue,'收缩压最高');
-      console.log(systolicBloodPressureDTOListLowValue,'收缩压最低');
-      console.log(systolicBloodPressureDTOListRealValue,'收缩压');
+    
       this.BloodPressureChart.setOption({
-        backgroundColor: '#344b58',
+        borderColor: '#eee',
         title: {
           text: '血压',
           x: '20',
           top: '20',
           textStyle: {
-            color: '#fff',
+            color: '#90979c',
             fontSize: '22'
           },
         },
