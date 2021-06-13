@@ -30,7 +30,7 @@
 
 <script>
 import Chart from '@/components/Charts/MixChart'
-import { getMyBindingPatientList } from '@/api/table'
+import { getMyBindingPatientInfoList } from '@/api/table'
 import { getProteinuria, getBloodPressure } from '@/api/user'
 
 export default {
@@ -47,19 +47,19 @@ export default {
     }
   },
   mounted() {
-    this.getMyBindingPatientList()
+    this.getMyBindingPatientInfoList()
   },
   methods: {
     // 获取绑定列表
-    getMyBindingPatientList() {
+    getMyBindingPatientInfoList() {
       this.listLoading = true
-      getMyBindingPatientList().then(response => {
-        if (response.returnCode === 500) {
+      getMyBindingPatientInfoList().then(res => {
+        if (res.code === 500) {
           this.$message({
-            message: response.returnMessage
+            message: res.msg
           })
         }
-        this.patientList = response.resultList
+        this.patientList = res.data
       })
     },
     chosePatient(i, id) {
