@@ -32,7 +32,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://1.15.86.59:8082/', // 要跨域的域名
+        target: 'http://127.0.0.1:8082/', // 要跨域的域名
         changeOrigin: true, // 是否开启跨域
         pathRewrite: {
           '/api': ''

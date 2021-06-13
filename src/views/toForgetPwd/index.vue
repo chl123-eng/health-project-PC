@@ -40,7 +40,21 @@
           auto-complete="on"
         />
       </el-form-item>
-      <div class="tip">注：重置成功后，密码为Abc123456</div>
+
+      <el-form-item prop="newPassword">
+        <span class="svg-container">
+          <svg-icon icon-class="user" />
+        </span>
+        <el-input
+          ref="newPassword"
+          v-model="Form.newPassword"
+          placeholder="请输入新密码"
+          name="newPassword"
+          type="password"
+          tabindex="1"
+          auto-complete="on"
+        />
+      </el-form-item>
       <!-- <el-form-item prop="doctorPassword">
         <span class="svg-container">
           <svg-icon icon-class="password" />
@@ -90,7 +104,7 @@
           type="primary"
           style="width:100%;margin-bottom:30px;"
           @click.native.prevent="resetPwd"
-        >重置密码</el-button>
+        >修改密码</el-button>
       </div>
 
     </el-form>
@@ -116,10 +130,18 @@ export default {
         callback()
       }
     }
+    const validatePassword = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('密码不能少于六位'))
+      } else {
+        callback()
+      }
+    }
     return {
       Form: {
         account: '',
-        doctorId: ''
+        doctorId: '',
+        newPassword: ''
       },
       Rules: {
         account: [
@@ -127,6 +149,9 @@ export default {
         ],
         doctorId: [
           { required: true, trigger: 'blur', validator: validateId }
+        ],
+        newPassword: [
+          { required: true, trigger: 'blur', validator: validatePassword }
         ]
       },
       loading: false,
@@ -159,7 +184,7 @@ export default {
           resetPassword(this.Form).then(response => {
             this.$message(response.msg)
             if (response.code === 0) {
-              this.$message('重置成功')
+              this.$message('修改密码成功')
               setTimeout(() => {
                 this.$router.push({
                   path: '/login'

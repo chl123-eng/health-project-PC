@@ -11,7 +11,7 @@
 					<div v-for="(item,i) in list" :key="i" :class="item.toId === curUserId ? 'msg_left' : 'msg_right'">
 						<div :class="item.toId === curUserId ? 'messageLeft' : 'messageRight'">{{item.message}}</div>
 					</div>
-					
+
 				</div>
 				<div class="down">
 					<el-input
@@ -28,12 +28,12 @@
 </template>
 
 <script>
-import { getMyBindingPatientList } from '@/api/table'
+import { getMyBindingPatientInfoList } from '@/api/table'
 import { getMessageList } from '@/api/askingRoom'
 import axios from 'axios';
 import { param2Obj } from '../../utils';
 export default {
-	
+
 	name: 'HelloWorld',
 	data(){
 		return{
@@ -65,40 +65,40 @@ export default {
     },
     //获取绑定患者列表
     getPatientList() {
-      getMyBindingPatientList().then(res => {
-        if(res.returnCode == 500){
+      getMyBindingPatientInfoList().then(res => {
+        if(res.code == 500){
           this.$message({
-            message: res.returnMessage
+            message: res.msg
           })
         }
-        this.patientList = res.resultList
+        this.patientList = res.data
       })
     },
-    initWebSocket: function (userId) {      
-			// WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https                
-			this.websock = new WebSocket("ws://1.15.86.59:8082/socket/"+userId);                
-			this.websock.onopen = this.websocketonopen;                
-			this.websock.onerror = this.websocketonerror;                
-			this.websock.onmessage = this.websocketonmessage;                
+    initWebSocket: function (userId) {
+			// WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
+			this.websock = new WebSocket("ws://1.15.86.59:8082/socket/"+userId);
+			this.websock.onopen = this.websocketonopen;
+			this.websock.onerror = this.websocketonerror;
+			this.websock.onmessage = this.websocketonmessage;
 			this.websock.onclose = this.websocketclose;
     },
-    websocketonopen: function () {                
-			console.log("WebSocket连接成功");    
-		},              
-		websocketonerror: function (e) { 
-			console.log("WebSocket连接发生错误",e);              
-		},              
-		websocketonmessage: function (e) {  
+    websocketonopen: function () {
+			console.log("WebSocket连接成功");
+		},
+		websocketonerror: function (e) {
+			console.log("WebSocket连接发生错误",e);
+		},
+		websocketonmessage: function (e) {
       let data = JSON.parse(e.data);
       if(data.fromId == this.toUserId){
         this.list.push(data)
       }
-		},              
+		},
 		websocketclose: function (e) {
 			if(this.curUserId != null){
         this.initWebSocket(this.curUserId, 99999999)
-			}   
-			console.log(e);              
+			}
+			console.log(e);
     },
     // 消息发送
 		sendMsg(){
@@ -111,7 +111,7 @@ export default {
         toId: this.toUserId
       }
       this.list.push(data)
-      
+
 			this.websock.send(JSON.stringify(data))
       this.message = ''
     },
@@ -121,7 +121,7 @@ export default {
       this.list = []
       this.getMessageList()
       console.log(this.allMsgList);
-      
+
       for(let i = 0; i < this.allMsgList.length; i++){
         if(this.allMsgList[i].fromId == this.curUserId && this.allMsgList[i].toId == this.toUserId){
           this.list.push(this.allMsgList[i])
