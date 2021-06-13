@@ -1,9 +1,9 @@
 <template>
   <div class="chart-container">
-    <div style='display: flex'>
+    <div style="display: flex">
       <div class="left">
         <ul class="patients">
-          <li v-for="(item,index) in patientList" :key="index" :class="{ activeTag : key === index }" @click="chosePatient(index,item.userId)">{{ item.userName}}</li>
+          <li v-for="(item,index) in patientList" :key="index" :class="{ activeTag : key === index }" @click="chosePatient(index,item.userId)">{{ item.userName }}</li>
         </ul>
       </div>
       <div class="right">
@@ -15,14 +15,14 @@
               value-format="yyyy-MM-dd"
               range-separator="至"
               start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
+              end-placeholder="结束日期"
+            />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="search">查询</el-button>
           </el-form-item>
         </el-form>
-        <chart :patientId='patientId' :daterange='daterange' :proteinuriaData='proteinuriaData' :bloodPressureData='bloodPressureData'/>
+        <chart :patient-id="patientId" :daterange="daterange" :proteinuria-data="proteinuriaData" :blood-pressure-data="bloodPressureData" />
       </div>
     </div>
   </div>
@@ -30,13 +30,13 @@
 
 <script>
 import Chart from '@/components/Charts/MixChart'
-import { getMyBindingPatientList} from '@/api/table'
+import { getMyBindingPatientList } from '@/api/table'
 import { getProteinuria, getBloodPressure } from '@/api/user'
 
 export default {
   name: 'MixChart',
   components: { Chart },
-  data(){
+  data() {
     return {
       patientList: [],
       key: '',
@@ -46,30 +46,30 @@ export default {
       bloodPressureData: {}
     }
   },
-  mounted(){
+  mounted() {
     this.getMyBindingPatientList()
   },
   methods: {
-    //获取绑定列表
+    // 获取绑定列表
     getMyBindingPatientList() {
       this.listLoading = true
       getMyBindingPatientList().then(response => {
-        if(response.returnCode == 500){
+        if (response.returnCode === 500) {
           this.$message({
             message: response.returnMessage
           })
         }
-        this.patientList= response.resultList
+        this.patientList = response.resultList
       })
     },
-    chosePatient(i,id){
+    chosePatient(i, id) {
       this.key = i
       this.patientId = id
     },
-    search(){
+    search() {
       const beginTime = this.daterange[0]
       const endTime = this.daterange[1]
-      let data = {
+      const data = {
         beginTime: beginTime,
         endTime: endTime,
         userId: this.patientId

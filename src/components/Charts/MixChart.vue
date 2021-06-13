@@ -8,22 +8,21 @@
 <script>
 import * as echarts from 'echarts'
 import resize from './mixins/resize'
-import { Logger } from 'runjs/lib/common'
 
 export default {
   mixins: [resize],
   props: {
     proteinuriaData: {
       type: Object,
-      default: {}
+      default: () => {}
     },
     bloodPressureData: {
       type: Object,
-      default: {}
+      default: () => {}
     },
     daterange: {
       type: Array,
-      default: ''
+      default: () => []
     },
     patientId: {
       type: String,
@@ -52,21 +51,21 @@ export default {
       BloodPressureChart: null
     }
   },
-  mounted() {
-    this.initUriaProteinChart()
-    this.initBloodPressureChart()
-  },
-  watch:{
-    proteinuriaData(){
-      if(this.proteinuriaData.realValueList != null){
+  watch: {
+    proteinuriaData() {
+      if (this.proteinuriaData.realValueList != null) {
         this.initUriaProteinChart()
       }
     },
-    bloodPressureData(){
-      if(this. bloodPressureData.realValueList != null){
+    bloodPressureData() {
+      if (this.bloodPressureData.realValueList != null) {
         this.initBloodPressureChart()
       }
     }
+  },
+  mounted() {
+    this.initUriaProteinChart()
+    this.initBloodPressureChart()
   },
   beforeDestroy() {
     if (!this.UriaProteinChart) {
@@ -76,34 +75,33 @@ export default {
     this.UriaProteinChart = null
   },
   methods: {
-    //日期的转换
-      dateFormat(fmt, date) {
-        let ret = ''
-        date = new Date(date)
-        const opt = {
-          'Y+': date.getFullYear().toString(), // 年
-          'm+': (date.getMonth()+1).toString(), // 月
-          'd+': date.getDate().toString() // 日
-          // 有其他格式化字符需求可以继续添加，必须转化成字符串
+    // 日期的转换
+    dateFormat(fmt, date) {
+      let ret = ''
+      date = new Date(date)
+      const opt = {
+        'Y+': date.getFullYear().toString(), // 年
+        'm+': (date.getMonth() + 1).toString(), // 月
+        'd+': date.getDate().toString() // 日
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      }
+      for (const k in opt) {
+        ret = new RegExp('(' + k + ')').exec(fmt)
+        if (ret) {
+          fmt = fmt.replace(
+            ret[1],
+            ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, '0')
+          )
         }
-        for (let k in opt) {
-          ret = new RegExp('(' + k + ')').exec(fmt)
-          if (ret) {
-            fmt = fmt.replace(
-              ret[1],
-              ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, '0')
-            )
-          }
-        }
-        return fmt
-      },
-    //对象转换为数组
-    arrayFormat(objList,valueName){
-      
+      }
+      return fmt
+    },
+    // 对象转换为数组
+    arrayFormat(objList, valueName) {
       const result = []
-      for(let i = 0; i < objList.length; i++){
+      for (let i = 0; i < objList.length; i++) {
         const data = []
-        data[0] = this.dateFormat('YYYY-mm-dd',objList[i].time)
+        data[0] = this.dateFormat('YYYY-mm-dd', objList[i].time)
         data[1] = objList[i][valueName]
         result.push(data)
       }
@@ -114,9 +112,9 @@ export default {
       const heightStandardValueList = this.proteinuriaData.heightStandardValueList
       const proteinuriaRealValueList = this.proteinuriaData.realValueList
 
-      const heightStandardValue = this.arrayFormat(heightStandardValueList,'value')
-      const proteinuriaRealValue = this.arrayFormat(proteinuriaRealValueList,'value')
-      
+      const heightStandardValue = this.arrayFormat(heightStandardValueList, 'value')
+      const proteinuriaRealValue = this.arrayFormat(proteinuriaRealValueList, 'value')
+
       this.UriaProteinChart.setOption({
         backgroundColor: '#fff',
         title: {
@@ -126,7 +124,7 @@ export default {
           textStyle: {
             color: '#90979c',
             fontSize: '22'
-          },
+          }
         },
         grid: {
           left: '15%',
@@ -144,7 +142,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['最高标准值150',  '尿蛋白值']
+          data: ['最高标准值150', '尿蛋白值']
         },
         calculable: true,
         xAxis: [{
@@ -216,59 +214,57 @@ export default {
           end: 35
         }],
         series: [
-        {
-          name: '最高标准值150',
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: 'rgba(255,144,128,1)',
-              label: {
-                show: false
+          {
+            name: '最高标准值150',
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: 'rgba(255,144,128,1)',
+                label: {
+                  show: false
+                }
               }
-            }
+            },
+            data: heightStandardValue
           },
-          data: heightStandardValue
-        },
 
-        {
-          name: '尿蛋白值',
-          type: 'line',
-          symbolSize: 10,
-          symbol: 'circle',
-          itemStyle: {
-            normal: {
-              color: 'rgba(252,230,48,1)',
-              barBorderRadius: 0,
-              label: {
-                show: true,
-                position: 'top'
+          {
+            name: '尿蛋白值',
+            type: 'line',
+            symbolSize: 10,
+            symbol: 'circle',
+            itemStyle: {
+              normal: {
+                color: 'rgba(252,230,48,1)',
+                barBorderRadius: 0,
+                label: {
+                  show: true,
+                  position: 'top'
+                }
               }
-            }
-          },
-          data: proteinuriaRealValue
+            },
+            data: proteinuriaRealValue
           }
         ]
       })
     },
-    initBloodPressureChart(){
+    initBloodPressureChart() {
       this.BloodPressureChart = echarts.init(document.getElementById('bloodPressure'))
 
       const diastolicBloodPressureDTOList = this.bloodPressureData.diastolicBloodPressureDTOList
       const systolicBloodPressureDTOList = this.bloodPressureData.systolicBloodPressureDTOList
       const realValueList = this.bloodPressureData.realValueList
 
-      //舒张压
-      const diastolicBloodPressureHeightValue = this.arrayFormat(diastolicBloodPressureDTOList,'heightValue')
-      const diastolicBloodPressureLowValue = this.arrayFormat(diastolicBloodPressureDTOList,'lowValue')
-      const diastolicBloodPressureRealValue = this.arrayFormat(realValueList,'heightValue')
+      // 舒张压
+      const diastolicBloodPressureHeightValue = this.arrayFormat(diastolicBloodPressureDTOList, 'heightValue')
+      const diastolicBloodPressureLowValue = this.arrayFormat(diastolicBloodPressureDTOList, 'lowValue')
+      const diastolicBloodPressureRealValue = this.arrayFormat(realValueList, 'heightValue')
 
-      
-      
-      //收缩压
-      const systolicBloodPressureDTOListHeightValue = this.arrayFormat(systolicBloodPressureDTOList,'heightValue')
-      const systolicBloodPressureDTOListLowValue = this.arrayFormat(systolicBloodPressureDTOList,'lowValue')
-      const systolicBloodPressureDTOListRealValue = this.arrayFormat(realValueList,'lowValue')
-    
+      // 收缩压
+      const systolicBloodPressureDTOListHeightValue = this.arrayFormat(systolicBloodPressureDTOList, 'heightValue')
+      const systolicBloodPressureDTOListLowValue = this.arrayFormat(systolicBloodPressureDTOList, 'lowValue')
+      const systolicBloodPressureDTOListRealValue = this.arrayFormat(realValueList, 'lowValue')
+
       this.BloodPressureChart.setOption({
         borderColor: '#eee',
         title: {
@@ -278,7 +274,7 @@ export default {
           textStyle: {
             color: '#90979c',
             fontSize: '22'
-          },
+          }
         },
         grid: {
           left: '15%',
@@ -296,7 +292,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['舒张压最低值60', '舒张压最高值90', '舒张压值','收缩压最低值90', '收缩压最高值140', '收缩压值']
+          data: ['舒张压最低值60', '舒张压最高值90', '舒张压值', '收缩压最低值90', '收缩压最高值140', '收缩压值']
         },
         calculable: true,
         xAxis: [{
@@ -368,103 +364,102 @@ export default {
           end: 35
         }],
         series: [
-        {
-          name: '舒张压最低值60',
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: 'rgba(255,144,128,1)',
-              label: {
-                show: false
-              }
-            }
-          },
-          data: diastolicBloodPressureLowValue 
-        },
-
-        {
-          name: '舒张压最高值90',
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: 'rgba(0,191,183,1)',
-              label: {
-                show: false,
-                formatter(p) {
-                  return ''
+          {
+            name: '舒张压最低值60',
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: 'rgba(255,144,128,1)',
+                label: {
+                  show: false
                 }
               }
-            }
+            },
+            data: diastolicBloodPressureLowValue
           },
-          data: diastolicBloodPressureHeightValue
-        },
-        {
-          name: '舒张压值',
-          type: 'line',
-          symbolSize: 10,
-          symbol: 'circle',
-          itemStyle: {
-            normal: {
-              color: 'rgba(252,230,48,1)',
-              barBorderRadius: 0,
-              label: {
-                show: true,
-                position: 'top'
-              }
-            }
-          },
-          data: diastolicBloodPressureRealValue
-        },
-         {
-          name: '收缩压最低值90',
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: 'rgba(0,144,128,1)',
-              label: {
-                show: false
-              }
-            }
-          },
-          data: systolicBloodPressureDTOListLowValue
-        },
 
-        {
-          name: '收缩压最高值140',
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: 'rgba(180,191,183,1)',
-              label: {
-                show: false,
-                formatter(p) {
-                  return ''
+          {
+            name: '舒张压最高值90',
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: 'rgba(0,191,183,1)',
+                label: {
+                  show: false,
+                  formatter(p) {
+                    return ''
+                  }
                 }
               }
-            }
+            },
+            data: diastolicBloodPressureHeightValue
           },
-          data: systolicBloodPressureDTOListHeightValue
-        },
-        {
-          name: '收缩压值',
-          type: 'line',
-          symbolSize: 10,
-          symbol: 'circle',
-          itemStyle: {
-            normal: {
-              color: 'rgba(100,230,48,1)',
-              barBorderRadius: 0,
-              label: {
-                show: true,
-                position: 'top'
+          {
+            name: '舒张压值',
+            type: 'line',
+            symbolSize: 10,
+            symbol: 'circle',
+            itemStyle: {
+              normal: {
+                color: 'rgba(100,230,48,1)',
+                barBorderRadius: 0,
+                label: {
+                  show: true,
+                  position: 'top'
+                }
               }
-            }
+            },
+            data: systolicBloodPressureDTOListRealValue
           },
-          data: systolicBloodPressureDTOListRealValue
-        }
+          {
+            name: '收缩压最低值90',
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: 'rgba(0,144,128,1)',
+                label: {
+                  show: false
+                }
+              }
+            },
+            data: systolicBloodPressureDTOListLowValue
+          },
+
+          {
+            name: '收缩压最高值140',
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: 'rgba(180,191,183,1)',
+                label: {
+                  show: false,
+                  formatter(p) {
+                    return ''
+                  }
+                }
+              }
+            },
+            data: systolicBloodPressureDTOListHeightValue
+          },
+          {
+            name: '收缩压值',
+            type: 'line',
+            symbolSize: 10,
+            symbol: 'circle',
+            itemStyle: {
+              normal: {
+                color: 'rgba(252,230,48,1)',
+                barBorderRadius: 0,
+                label: {
+                  show: true,
+                  position: 'top'
+                }
+              }
+            },
+            data: diastolicBloodPressureRealValue
+          }
         ]
       })
-      
     }
   }
 }

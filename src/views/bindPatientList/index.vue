@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-form inline>
       <el-form-item label="患者姓名">
-        <el-input v-model="searchStr" style="width: 300px" clearable/>
+        <el-input v-model="searchStr" style="width: 300px" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="search">查询</el-button>
@@ -15,9 +15,9 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="序号" >
+      <el-table-column align="center" label="序号">
         <template slot-scope="scope">
-          {{ scope.$index + 1}}
+          {{ scope.$index + 1 }}
         </template>
       </el-table-column>
       <el-table-column label="昵称">
@@ -76,14 +76,14 @@
     <el-pagination
       background
       style="margin-top: 20px"
-      @current-change="handleCurrPage"
-      @size-change="handlePageSize"
       :current-page="currPage"
       :page-size="pageSize"
       :page-sizes="[1,2,3]"
       :total="total"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+      layout="total, sizes, prev, pager, next, jumper"
+      @current-change="handleCurrPage"
+      @size-change="handlePageSize"
+    />
   </div>
 </template>
 
@@ -115,26 +115,26 @@ export default {
     this.getMyBindingPatientList()
   },
   methods: {
-    //当前页改变
-    handleCurrPage(page){
+    // 当前页改变
+    handleCurrPage(page) {
       this.currPage = page
-      console.log(this.currPage);
-      
+      console.log(this.currPage)
+
       this.getMyBindingPatientList()
     },
-    //每页数改变
-    handlePageSize(size){
+    // 每页数改变
+    handlePageSize(size) {
       this.pageSize = size
-      console.log(this.pageSize);
-      
+      console.log(this.pageSize)
+
       this.getMyBindingPatientList()
     },
-    //点击详情
-    toPatientInfo(userId){
-      sessionStorage.setItem('userId',userId)
-      this.$router.push({path: '/patientInfo'})
+    // 点击详情
+    toPatientInfo(userId) {
+      sessionStorage.setItem('userId', userId)
+      this.$router.push({ path: '/patientInfo' })
     },
-    //获取绑定列表
+    // 获取绑定列表
     getMyBindingPatientList() {
       this.listLoading = true
       const params = {
@@ -142,7 +142,7 @@ export default {
         pageSize: this.pageSize
       }
       getMyBindingPatientList(params).then(response => {
-        if(response.returnCode == 500){
+        if (response.returnCode === 500) {
           this.$message({
             message: response.returnMessage
           })
@@ -151,17 +151,20 @@ export default {
         this.total = response.total
       })
     },
-    //根据姓名查询
-    search(){
+    // 根据姓名查询
+    search() {
       getUserListByFilter({
-        searchStr: this.searchStr
+        searchStr: this.searchStr,
+        currentPage: this.currPage,
+        pageSize: this.pageSize
       }).then(res => {
-        if(res.code == 0){
+        if (res.returnCode === 0) {
           this.$message({
             type: 'success',
             message: '查询成功'
           })
-          this.list = res.data
+          this.total = res.total
+          this.list = res.resultList
         }
       })
     }

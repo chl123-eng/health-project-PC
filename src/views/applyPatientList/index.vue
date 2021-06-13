@@ -7,9 +7,9 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="序号" >
+      <el-table-column align="center" label="序号">
         <template slot-scope="scope">
-          {{ scope.$index + 1}}
+          {{ scope.$index + 1 }}
         </template>
       </el-table-column>
       <el-table-column label="昵称">
@@ -69,19 +69,19 @@
     <el-pagination
       background
       style="margin-top: 20px"
-      @current-change="handleCurrPage"
-      @size-change="handlePageSize"
       :current-page="currPage"
       :page-size="pageSize"
       :page-sizes="[5,10,15]"
       :total="total"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+      layout="total, sizes, prev, pager, next, jumper"
+      @current-change="handleCurrPage"
+      @size-change="handlePageSize"
+    />
   </div>
 </template>
 
 <script>
-import { getApplyingPatientList,processPatientApplying } from '@/api/table'
+import { getApplyingPatientList, processPatientApplying } from '@/api/table'
 
 export default {
   filters: {
@@ -107,17 +107,17 @@ export default {
     this.fetchData()
   },
   methods: {
-      //当前页改变
-    handleCurrPage(page){
+    // 当前页改变
+    handleCurrPage(page) {
       this.currPage = page
       this.fetchData()
     },
-    //每页数改变
-    handlePageSize(size){
+    // 每页数改变
+    handlePageSize(size) {
       this.pageSize = size
       this.fetchData()
     },
-    //获取申请患者列表
+    // 获取申请患者列表
     fetchData() {
       this.listLoading = true
       const params = {
@@ -126,17 +126,17 @@ export default {
       }
       getApplyingPatientList(params).then(response => {
         this.list = response.resultList
-        this.total = response.tot
-        if(response.returnCode == 500){
+        this.total = response.total
+        if (response.returnCode === 500) {
           this.$message({
             message: response.returnMessage
           })
         }
       })
     },
-    //通过或拒绝请求函数
-    processPatientApplying(userId,result){
-      let params = {
+    // 通过或拒绝请求函数
+    processPatientApplying(userId, result) {
+      const params = {
         userId: userId,
         result: result
       }
@@ -144,17 +144,16 @@ export default {
         this.fetchData()
       })
     },
-    //通过申请
-    pass(userId){
-      let result = 'Y'
-      this.processPatientApplying(userId, result)
-      
-    },
-    //拒绝申请
-    reject(userId){
-      let result = 'N'
+    // 通过申请
+    pass(userId) {
+      const result = 'Y'
       this.processPatientApplying(userId, result)
     },
+    // 拒绝申请
+    reject(userId) {
+      const result = 'N'
+      this.processPatientApplying(userId, result)
+    }
   }
 }
 </script>

@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-04-19 22:44:16
+ * @LastEditTime: 2021-06-11 15:42:54
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \health-project-PC\src\api\table.js
+ */
 import request from '@/utils/request'
 
 export function getApplyingPatientList() {
@@ -22,11 +30,11 @@ export function processPatientApplying(params) {
   })
 }
 
-export function getUserListByFilter(params) {
+export function getUserListByFilter(data) {
   return request({
     url: '/chp/doctor/patientService/getUserListByFilter',
-    method: 'get',
-    params
+    method: 'post',
+    data
   })
 }
 
