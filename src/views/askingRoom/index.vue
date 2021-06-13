@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { getMyBindingPatientList } from '@/api/table'
+import { getMyBindingPatientInfoList } from '@/api/table'
 import { getMessageList } from '@/api/askingRoom'
 export default {
 
@@ -63,13 +63,13 @@ export default {
     },
     // 获取绑定患者列表
     getPatientList() {
-      getMyBindingPatientList().then(res => {
-        if (res.returnCode === 500) {
+      getMyBindingPatientInfoList().then(res => {
+        if (res.code === 500) {
           this.$message({
-            message: res.returnMessage
+            message: res.msg
           })
         }
-        this.patientList = res.resultList
+        this.patientList = res.data
       })
     },
     initWebSocket: function(userId) {

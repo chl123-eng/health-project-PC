@@ -76,3 +76,9 @@ export function getNoticeList(params) {
     params
   })
 }
+export function getMyBindingPatientInfoList() {
+  return request({
+    url: 'chp/doctor/patientService/getMyBindingPatientInfoList',
+    method: 'get'
+  })
+}
