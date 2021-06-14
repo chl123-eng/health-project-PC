@@ -11,8 +11,8 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper" style="display: flex">
-          <div style="font-size: 20px;font-weight: bold;margin-right: 20px">欢迎您，{{form.doctorName}}</div>
-          <img :src='form.doctorPhoto' class="user-avatar">
+          <div style="font-size: 20px;font-weight: bold;margin-right: 20px">欢迎您，{{ form.doctorName }}</div>
+          <img :src="form.doctorPhoto" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -49,20 +49,20 @@ export default {
   computed: {
     ...mapGetters(['sidebar', 'avatar'])
   },
-  data(){
+  data() {
     return {
       form: {}
     }
   },
-  mounted(){
+  mounted() {
     this.getInfo()
   },
   methods: {
-    //获取个人信息
-    getInfo(){
+    // 获取个人信息
+    getInfo() {
       getInfo().then(res => {
         this.form = res.data
-        if(this.form.checkState == "CHECKED"){
+        if (this.form.checkState === 'CHECKED') {
           this.disabled = true
         }
       })

@@ -4,6 +4,7 @@
       <div class="left">
         <ul class="patients">
           <li v-for="(item,index) in patientList" :key="index" :class="{ activeTag : key === index }" @click="chosePatient(index,item.userId)">{{ item.userName }}</li>
+
         </ul>
       </div>
       <div class="right">
@@ -60,6 +61,7 @@ export default {
           })
         }
         this.patientList = res.data
+        console.log(res.data)
       })
     },
     chosePatient(i, id) {
@@ -92,32 +94,36 @@ export default {
   height: calc(100vh - 84px);
 }
 .left{
-		width: 200px;
-		min-height: calc(100vh - 44px);
-		border-right: 1px #1890ff solid;
-	}
-  .right{
-		width: calc(100vw - 200px);
-		min-height: calc(100vh - 100px);
-	}
-  ul {
-    padding: 0;
-    margin: 0;
-  }
-  li {
-    list-style: none;
-    line-height: 50px;
-    border-bottom: 1px solid #999;
-    font-size: 20px;
-    text-align: center;
-  }
-  .activeTag {
-    background-color: rgb(132, 190, 236);
-    cursor: pointer;
-    color: #fff;
-  }
-  li:hover {
-    cursor: pointer;
-  }
+  width: 200px;
+  max-height: calc(100vh - 44px);
+  border-right: 1px #1890ff solid;
+}
+.patients{
+  height:100%;
+  overflow: auto;
+}
+.right{
+  width: calc(100vw - 200px);
+  min-height: calc(100vh - 100px);
+}
+ul {
+  padding: 0;
+  margin: 0;
+}
+li {
+  list-style: none;
+  line-height: 50px;
+  border-bottom: 1px solid #999;
+  font-size: 20px;
+  text-align: center;
+}
+.activeTag {
+  background-color: rgb(132, 190, 236);
+  cursor: pointer;
+  color: #fff;
+}
+li:hover {
+  cursor: pointer;
+}
 </style>
 
