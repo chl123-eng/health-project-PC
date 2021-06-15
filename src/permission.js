@@ -1,10 +1,3 @@
-/*
- * @Author: shuhongxie
- * @Date: 2021-05-30 11:04:15
- * @LastEditors: shuhongxie
- * @LastEditTime: 2021-05-30 12:03:17
- * @FilePath: /health-project-PC/src/permission.js
- */
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
