@@ -1,10 +1,3 @@
-<!--
- * @Author: shuhongxie
- * @Date: 2021-04-19 20:58:42
- * @LastEditors: shuhongxie
- * @LastEditTime: 2021-04-19 21:19:33
- * @FilePath: /health-project-PC/src/layout/components/Sidebar/SidebarItem.vue
--->
 <template>
   <div v-if="!item.hidden">
     <template
